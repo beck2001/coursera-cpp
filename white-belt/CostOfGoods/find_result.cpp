@@ -17,6 +17,7 @@ int main() {
 
     result = first_discount < second_discount ? first_discount : second_discount;
     std::cout << result;
+    return 0;
 }
 
 double find_percentage(double value, double percentage) {
