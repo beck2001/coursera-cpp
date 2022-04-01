@@ -14,9 +14,9 @@ int main() {
         std::cin >> s;
     }
     sort(v.begin(), v.end(), [](const std::string &first, const std::string &second) {
-        return lex_compare(begin(first), end(first), begin(second), end(second), [](char left, char right) {
+        return lexicographical_compare(begin(first), end(first), begin(second), end(second), [](char left, char right) {
             return tolower(left) < tolower(right);
-        })
+        });
     });
     print_vector(v);
     return 0;
