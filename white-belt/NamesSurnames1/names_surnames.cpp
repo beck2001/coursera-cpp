@@ -12,6 +12,9 @@ private:
             if (year_and_name.first <= year) {
                 result = year_and_name.second;
             }
+            else {
+                break;
+            }
         }
         return result;
     }
