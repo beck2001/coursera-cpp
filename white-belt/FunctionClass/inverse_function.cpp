@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 
 struct Image {
@@ -33,7 +34,7 @@ public:
         }
     }
 
-    void Inverse() {
+    void Invert() {
         if (operation == '-') {
             operation = '+';
         }
@@ -45,17 +46,18 @@ public:
 
 class Function {
 private:
-    std::vector<FunctionParts> parts;
+    std::vector<FunctionPart> parts;
 
 public:
-    void Inverse() {
+    void Invert() {
         for (auto &f_part : parts) {
-            part.Inverse();
+            f_part.Invert();
         }
+        std::reverse(parts.begin(), parts.end());
     }
 
-    void AddPart(const FunctionPart &function_part) {
-        parts.push_back(function_part);
+    void AddPart(char operation, double value) {
+        parts.push_back(FunctionPart(operation, value));
     }
 
     double Apply(double value) const {
@@ -66,6 +68,30 @@ public:
     }
 };
 
+Function MakeWeightFunction(const Image &image, const Params &params) {
+    Function function;
+    function.AddPart('-', image.freshness * params.a + params.b);
+    function.AddPart('+', image.rating * params.c);
+    return function;
+}
+
+double ComputeImageWeight(const Params &params, const Image &image) {
+    Function function = MakeWeightFunction(image, params);
+    return function.Apply(image.quality);
+}
+
+double ComputeQualityByWeight(const Params &params, const Image &image, double weight) {
+    Function function = MakeWeightFunction(image, params);
+    function.Invert();
+    return function.Apply(weight);
+}
+
 int main() {
+    Image image = {10, 2, 6};
+    Params params = {4, 2, 6};
+    // 36 (weight) quality = 10
+    double weight = ComputeImageWeight(params, image);
+    double quality = ComputeQualityByWeight(params, image, weight);
+    std::cout << "weight: " << weight << std::endl << "quality: " << quality << std::endl;
     return 0;
 }
