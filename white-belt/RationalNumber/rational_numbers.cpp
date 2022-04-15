@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <sstream>
 
 class Rational {
 private:
@@ -79,6 +80,28 @@ Rational operator*(const Rational& lhs, const Rational& rhs) {
 
 Rational operator/(const Rational& lhs, const Rational& rhs) {
     return {lhs.get_numerator() * rhs.get_denominator(), lhs.get_denominator() * rhs.get_numerator()};
+}
+
+std::ostream& operator<<(std::ostream& stream, const Rational& r) {
+    stream << r.get_numerator() << "/" << r.get_denominator();
+    return stream;
+}
+
+std::istream& operator>>(std::istream& stream, Rational& r) {
+    if (stream) {
+        int num, den;
+        char delim;
+        stream >> num >> delim >> den;
+        if (stream) {
+            if (delim == '/') {
+                r = Rational(num, den);
+            }
+            else {
+                stream.setstate(std::ios_base::failbit);
+            }
+        }
+    }
+    return stream;
 }
 
 int main() {
@@ -179,6 +202,73 @@ int main() {
         if (!equal) {
             std::cout << "5/4 / 15/8 != 2/3" << std::endl;
             return 10;
+        }
+    }
+    {
+        std::ostringstream output;
+        output << Rational(-6, 8);
+        if (output.str() != "-3/4") {
+            std::cout << "Rational(-6, 8) should be written as -3/4" << std::endl;
+            return 11;
+        }
+    }
+    {
+        std::istringstream input("5/7");
+        Rational r;
+        input >> r;
+        bool equal = r == Rational(5, 7);
+        if (!equal) {
+            std::cout << "5/7 is incorrectly read as " << r << std::endl;
+            return 12;
+        }
+    }
+    {
+        std::istringstream input("");
+        Rational r;
+        bool correct = !(input >> r);
+        if (!correct) {
+            std::cout << "Read from empty stream works incorrectly" << std::endl;
+            return 13;
+        }
+    }
+    {
+        std::istringstream input("5/7 10/8");
+        Rational r1, r2;
+        input >> r1 >> r2;
+        bool correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+        if (!correct) {
+            std::cout << "Multiple values are read incorrectly" << std::endl;
+            return 14;
+        }
+
+        input >> r1;
+        input >> r2;
+        correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+        if (!correct) {
+            std::cout << "Read from emtpy stream shouldn't change arguments: " << r1 << " " << r2 << std::endl;
+            return 15;
+        }
+    }
+    {
+        std::istringstream input1("1*2"), input2("1/"), input3("/4");
+        Rational r1, r2, r3;
+        input1 >> r1;
+        input2 >> r2;
+        input3 >> r3;
+        bool correct = r1 == Rational() && r2 == Rational() && r3 == Rational();
+        if (!correct) {
+            std::cout << "Reading of incorrectly formatted rationals shouldn't change arguments: " << r1 << " " << r2 << " " << r3 << std::endl;
+            return 16;
+        }
+    }
+    {
+        std::istringstream input("2/4/6/8");
+        Rational r1;
+        input >> r1;
+        bool correct = r1 == Rational(1, 2);
+        if (!correct) {
+            std::cout << "Multiple-slashed number sequence value read incorrectly: " << r1 << std::endl;
+            return 17;
         }
     }
     
