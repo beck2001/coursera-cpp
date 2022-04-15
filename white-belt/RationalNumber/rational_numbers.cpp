@@ -73,6 +73,14 @@ bool operator!=(const Rational& lhs, const Rational& rhs) {
     return lhs.get_numerator() != rhs.get_numerator() || lhs.get_denominator() != rhs.get_denominator();
 }
 
+Rational operator*(const Rational& lhs, const Rational& rhs) {
+    return {lhs.get_numerator() * rhs.get_numerator(), lhs.get_denominator() * rhs.get_denominator()};
+}
+
+Rational operator/(const Rational& lhs, const Rational& rhs) {
+    return {lhs.get_numerator() * rhs.get_denominator(), lhs.get_denominator() * rhs.get_numerator()};
+}
+
 int main() {
     {
         const Rational r(3, 10);
@@ -151,6 +159,26 @@ int main() {
         if (!equal) {
             std::cout << "5/7 - 2/9 != 31/63" << std::endl;
             return 8;
+        }
+    }
+    {
+        const Rational r1(2, 3);
+        const Rational r2(4, 3);
+        const Rational res = r1 * r2;
+        bool equal = res == Rational(8, 9);
+        if (!equal) {
+            std::cout << "2/3 * 4/3 != 8/9" << std::endl;
+            return 9;
+        }
+    }
+    {
+        const Rational r1(5, 4);
+        const Rational r2(15, 8);
+        const Rational res = r1 / r2;
+        bool equal = res == Rational(2, 3);
+        if (!equal) {
+            std::cout << "5/4 / 15/8 != 2/3" << std::endl;
+            return 10;
         }
     }
     
