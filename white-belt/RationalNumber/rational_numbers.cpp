@@ -1,6 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <sstream>
+#include <set>
+#include <map>
+#include <vector>
 
 class Rational {
 private:
@@ -85,6 +88,13 @@ Rational operator/(const Rational& lhs, const Rational& rhs) {
 std::ostream& operator<<(std::ostream& stream, const Rational& r) {
     stream << r.get_numerator() << "/" << r.get_denominator();
     return stream;
+}
+
+bool operator<(const Rational& lhs, const Rational& rhs) {
+    if (lhs.get_denominator() == rhs.get_denominator()) {
+        return lhs.get_numerator() < rhs.get_numerator();
+    }
+    return lhs.get_numerator() * rhs.get_denominator() < rhs.get_numerator() * lhs.get_denominator();
 }
 
 std::istream& operator>>(std::istream& stream, Rational& r) {
@@ -269,6 +279,33 @@ int main() {
         if (!correct) {
             std::cout << "Multiple-slashed number sequence value read incorrectly: " << r1 << std::endl;
             return 17;
+        }
+    }
+    {
+        const std::set<Rational> rs = {{1, 2}, {1, 25}, {3, 4}, {1, 2}};
+        if (rs.size() != 3) {
+            std::cout << "Wrong amount of items in the set" << std::endl;
+            return 18;
+        }
+
+        std::vector<Rational> v;
+        for (auto x : rs) {
+            v.push_back(x);
+        }
+        if (v != std::vector<Rational>{{1, 25}, {1, 2}, {3, 4}}) {
+            std::cout << "Rationals compare works incorrectly" << std::endl;
+            return 19;
+        }
+    }
+    {
+        std::map<Rational, int> count;
+        ++count[{1, 2}];
+        ++count[{1, 2}];
+
+        ++count[{2, 3}];
+        if (count.size() != 2) {
+            std::cout << "Wrong amount of items in the map" << std::endl;
+            return 20;
         }
     }
     
