@@ -1,3 +1,3 @@
-# coursera-cpp
+# Tasks
 
-## Coursera assignments for the specialization, which consists of 5 courses dedicated to C++ programming language
+## Solutions to assignments, written in cpp
